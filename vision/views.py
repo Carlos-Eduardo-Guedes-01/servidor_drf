@@ -42,12 +42,11 @@ class VideoStreamingView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        # Certifique-se de que 'frame' esteja no request.FILES
         if 'frame' not in request.FILES:
             return Response({'error': 'Quadro não encontrado no formulário'}, status=400)
 
         frame = request.FILES['frame']
-        CONFIDENCE_THRESHOLD = 0.35  # Defina a confiança desejada
+        CONFIDENCE_THRESHOLD = 0.35
 
         # Carregando o modelo treinado YOLO
         queryset = Modelo.objects.first()
@@ -79,9 +78,12 @@ class VideoStreamingView(APIView):
             xmin, ymin, xmax, ymax = int(data[0]), int(data[1]), int(data[2]), int(data[3])
             class_id = int(data[5])
 
-            # Adiciona as informações à lista de resultados
+            # Adiciona as informações à lista de resultados como um dicionário
             results.append({'xmin': xmin, 'ymin': ymin, 'width': xmax - xmin, 'height': ymax - ymin})
+
+        # Retorna a lista de resultados como uma resposta JSON
         print(results)
         return Response(results)
+
     
     
